@@ -8,17 +8,13 @@ class Line extends React.Component {
 	}
 
 	onChangeMode(e) {
-		if (this.props.closePath) {
-			this.props.onChangeMode('closeLine');
-		} else {
-			this.props.onChangeMode('line');
-		}
+		this.props.onChangeMode(this.props.mode);
 	}
 
 	render() {
 		return (
 			<button onClick={this.onChangeMode}
-					className={"line"}>{this.props.closePath ? "ClosePathLine" : "Line"}</button>
+					className={"line"}>{this.props.mode}</button>
 		);
 	}
 }

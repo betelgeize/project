@@ -7,16 +7,18 @@ class Arc extends React.Component {
 		this.onChangeMode = this.onChangeMode.bind(this);
 	}
 
-	onChangeMode(e) {
-		this.props.onChangeMode(e.target.value);
+	onChangeMode() {
+		this.props.onChangeMode(this.props.mode);
 	}
 
 	render() {
 		return (
-			<select onChange={this.onChangeMode}>
-				<option value="arcfill">fill</option>
-				<option value="arcstroke">stroke</option>
-			</select>
+			<button onClick={this.onChangeMode}
+					className={"line"}>{this.props.mode}</button>
+			// <select onChange={this.onChangeMode}>
+			// 	<option value="arcfill">fill</option>
+			// 	<option value="arcstroke">stroke</option>
+			// </select>
 		);
 	}
 }

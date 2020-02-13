@@ -14,28 +14,26 @@ class App extends React.Component {
 		super();
 		this.initialState = {
 			ctx: {},
-			mode: ''
+			mode: '',
+			historyFunc: [],
+			defaultCtx: {}
 		};
 		this.state = this.initialState;
 		this.getDefaultCtx = this.getDefaultCtx.bind(this);
-		// this.reloadCtx = this.reloadCtx.bind(this);
+		this.getAction = this.getAction.bind(this);
 		this.onChangeMode = this.onChangeMode.bind(this);
 	}
 
-
-	getDefaultCtx(ctx) {
+	getDefaultCtx(defaultCtx) {
 		this.setState(() => ({
-				ctx
-			}
-		))
+			defaultCtx
+		}))
 	}
 
-	reloadCtx(ctx) {
-		debugger;
-		// this.setState(() => ({
-		// 		ctx
-		// 	}
-		// ));
+	getAction(func) {
+		this.setState((prevState) => ({
+			historyFunc: prevState.historyFunc.concat(func)
+		}))
 	}
 
 	onChangeMode(mode) {
@@ -50,25 +48,33 @@ class App extends React.Component {
 			<div className="App">
 				Canvas online
 				<div>
-					<Rect onChangeMode={this.onChangeMode}/>
-					<Arc onChangeMode={this.onChangeMode}/>
-					<Line onChangeMode={this.onChangeMode}/>
-					<Line onChangeMode={this.onChangeMode} closePath/>
+					<Rect onChangeMode={this.onChangeMode} mode = 'fill'/>
+					<Rect onChangeMode={this.onChangeMode} mode = 'stroke'/>
+					<Rect onChangeMode={this.onChangeMode} mode = 'clear'/>
+					<Arc onChangeMode={this.onChangeMode} mode = 'arcfill'/>
+					<Arc onChangeMode={this.onChangeMode} mode = 'arcstroke'/>
+					<Line onChangeMode={this.onChangeMode} mode = 'line'/>
+					<Line onChangeMode={this.onChangeMode} mode = 'straightLine'/>
+					<Line onChangeMode={this.onChangeMode} mode = 'closeLine'/>
+					<Line onChangeMode={this.onChangeMode} mode = 'bezierCurve'/>
 				</div>
 				<div>
 					Свойства
-					<Color ctx={this.state.ctx} fillStyle/>
-					<Color ctx={this.state.ctx} strokeStyle/>
+					<Color getAction={this.getAction} mode = 'fillStyle'/>
+					<Color getAction={this.getAction} mode = 'strokeStyle'/>
 				</div>
 				<div>
 					Текст
-					<Color ctx={this.state.ctx} shadowColor/>
+					<Color  getAction={this.getAction} mode = 'shadowColor'/>
 				</div>
-				<Canvas getDefaultCtx={this.getDefaultCtx}
-						ctx={this.state.ctx}
-						mode={this.state.mode}
+				<Canvas
+					getAction={this.getAction}
+					getDefaultCtx={this.getDefaultCtx}
+					defaultCtx={this.state.defaultCtx}
+					mode={this.state.mode}
+					historyFunc={this.state.historyFunc}
 				/>
-				<History ctx={this.state.ctx}/>
+				{/*<History ctx={this.state.ctx}/>*/}
 
 				{/*<header className="App-header">
 				<img src={logo} className="App-logo" alt="logo"/>

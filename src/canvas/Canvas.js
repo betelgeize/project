@@ -12,7 +12,6 @@ class Canvas extends React.Component {
 		this.onClick = this.onClick.bind(this);
 		this.startX = 0;
 		this.startY = 0;
-		this.ctx = {};
 		this.mouseDown = false;
 	}
 
@@ -20,12 +19,28 @@ class Canvas extends React.Component {
 		const canvas = this.canvasOne.current;
 		const ctx = canvas.getContext('2d');
 
-		this.ctx = ctx;
-		this.props.getDefaultCtx(ctx);
+		var defaultCtx = {};
+		for (let key in ctx) {
+			if (typeof ctx[key] !== 'function' && typeof ctx[key] !== 'object') {
+				defaultCtx[key] = ctx[key];
+			}
+		}
+		this.props.getDefaultCtx(defaultCtx);
 	}
 
 	componentDidUpdate(prevProps, prevState, snapshot) {
+		const canvas = this.canvasOne.current;
+		const ctx = canvas.getContext('2d');
 
+		// console.log(this.props.defaultCtx);
+		const defaultCtx = this.props.defaultCtx;
+		for (let key in defaultCtx) {
+			ctx[key] = defaultCtx[key];
+		}
+		ctx.clearRect(0,0, canvas.width, canvas.height);
+		this.props.historyFunc.map(itemFunc => {
+			itemFunc(ctx);
+		});
 	}
 
 	onClick(e) {
@@ -33,63 +48,96 @@ class Canvas extends React.Component {
 	}
 
 	onMouseDown(e) {
-		const canvas = this.canvasOne.current;
-		const currentRect = canvas.getBoundingClientRect();
-		const ctx = canvas.getContext('2d');
+		const currentPointX = this.getCurrentCoords(e).x;
+		const currentPointY = this.getCurrentCoords(e).y;
+		let {mode} = this.props;
 
-		this.startX = e.clientX - currentRect.left;
-		this.startY = e.clientY - currentRect.top;
+		this.startX = currentPointX;
+		this.startY = currentPointY;
 		this.mouseDown = true;
-		if (this.props.mode === 'line' || this.props.mode === 'closeLine') {
-			ctx.beginPath();
-			ctx.moveTo(this.startX, this.startY);
+		if (mode === 'line' || mode === 'closeLine' || mode === 'straightLine') {
+			this.props.getAction(ctx => {
+				ctx.beginPath();
+				ctx.moveTo(currentPointX, currentPointY);
+			})
 		}
 	}
 
 	onMouseMove(e) {
-		const canvas = this.canvasOne.current;
-		const ctx = canvas.getContext('2d');
+		let {mode} = this.props;
+		if (this.mouseDown && (mode === 'line' || mode === 'closeLine')) {
+			const currentPointX = this.getCurrentCoords(e).x;
+			const currentPointY = this.getCurrentCoords(e).y;
 
-		if (this.mouseDown && (this.props.mode === 'line' || this.props.mode === 'closeLine')) {
-			const currentRect = canvas.getBoundingClientRect();
-			ctx.lineTo(e.clientX - currentRect.left, e.clientY - currentRect.top);
-			ctx.stroke()
+			this.props.getAction(ctx => {
+				ctx.lineTo(currentPointX, currentPointY);
+				ctx.stroke();
+			})
 		}
 	}
 
 	onMouseUp(e) {
-		const canvas = this.canvasOne.current;
-		const ctx = canvas.getContext('2d');
-		const currentRect = canvas.getBoundingClientRect();
 		const startPointX = this.startX;
 		const startPointY = this.startY;
-		const finishPointX = e.clientX - currentRect.left;
-		const finishPointY = e.clientY - currentRect.top;
-		let arrCoords = [startPointX, startPointY, finishPointX - this.startX, finishPointY - this.startY];
-		let radius = Math.sqrt(Math.pow(finishPointY - startPointY, 2) + Math.pow(finishPointX - startPointX, 2));
+		const finishPointX = this.getCurrentCoords(e).x;
+		const finishPointY = this.getCurrentCoords(e).y;
+		let {mode} = this.props;
+
+		let rectCoords = () => {
+			return [startPointX, startPointY, finishPointX - startPointX, finishPointY - startPointY];
+		};
+		let arcCoords = () => {
+			let radius = Math.sqrt(Math.pow(finishPointY - startPointY, 2) + Math.pow(finishPointX - startPointX, 2));
+			return [startPointX, startPointY, radius, 0, 2 * Math.PI, false]
+		};
+		let drawFunc;
 
 		this.mouseDown = false;
-		if (this.props.mode === 'fill' || !this.props.mode) {
-			ctx.fillRect(...arrCoords);
-		} else if (this.props.mode === 'stroke') {
-			ctx.strokeRect(...arrCoords);
-		} else if (this.props.mode === 'clear') {
-			ctx.clearRect(...arrCoords);
-		} else if (this.props.mode === 'arcfill') {
-			ctx.beginPath();
-			ctx.arc(startPointX, startPointY, radius, 0, 2 * Math.PI, false);
-			ctx.fill();
-		} else if (this.props.mode === 'arcstroke') {
-			ctx.beginPath();
-			ctx.arc(startPointX, startPointY, radius, 0, 2 * Math.PI, false);
-			ctx.stroke();
-		} else if (this.props.mode === 'line') {
-			ctx.lineTo(finishPointX, finishPointY);
-			ctx.stroke();
-		} else if (this.props.mode === 'closeLine') {
-			ctx.lineTo(finishPointX, finishPointY);
-			ctx.closePath();
-			ctx.stroke();
+		if (mode === 'fill' || !mode) {
+			drawFunc = ctx => {
+				ctx.fillRect(...rectCoords());
+			};
+		} else if (mode === 'stroke') {
+			drawFunc = ctx => {
+				ctx.strokeRect(...rectCoords());
+			};
+		} else if (mode === 'clear') {
+			drawFunc = ctx => {
+				ctx.clearRect(...rectCoords());
+			};
+		} else if (mode === 'arcfill') {
+			drawFunc = ctx => {
+				ctx.beginPath();
+				ctx.arc(...arcCoords());
+				ctx.fill();
+			};
+		} else if (mode === 'arcstroke') {
+			drawFunc = ctx => {
+				ctx.beginPath();
+				ctx.arc(...arcCoords());
+				ctx.stroke();
+			};
+		} else if (mode === 'line' || mode === 'straightLine') {
+			drawFunc = ctx => {
+				ctx.lineTo(finishPointX, finishPointY);
+				ctx.stroke();
+			};
+		} else if (mode === 'closeLine') {
+			drawFunc = ctx => {
+				ctx.lineTo(finishPointX, finishPointY);
+				ctx.closePath();
+				ctx.stroke();
+			};
+		}
+		this.props.getAction(drawFunc);
+	}
+
+	getCurrentCoords(e) {
+		const canvas = this.canvasOne.current;
+		const currentRect = canvas.getBoundingClientRect();
+		return {
+			x : e.clientX - currentRect.left,
+			y : e.clientY - currentRect.top
 		}
 	}
 

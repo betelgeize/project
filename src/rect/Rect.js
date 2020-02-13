@@ -7,17 +7,16 @@ class Rect extends React.Component {
 		this.onChangeMode = this.onChangeMode.bind(this);
 	}
 
-	onChangeMode(e) {
-		this.props.onChangeMode(e.target.value);
+	onChangeMode() {
+		const props = this.props;
+
+		props.onChangeMode(props.mode);
 	}
 
 	render() {
 		return (
-			<select onChange={this.onChangeMode}>
-				<option value="fill">fill</option>
-				<option value="stroke">stroke</option>
-				<option value="clear">clear</option>
-			</select>
+			<button onClick={this.onChangeMode}
+					className={"rect"}>{this.props.mode}</button>
 		);
 	}
 }

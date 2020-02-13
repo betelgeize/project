@@ -17,7 +17,7 @@ class History extends React.Component {
 		}
 		return (
 			<div className="history">
-				{arr.length && arr.map(item => <p key={item.id}>{item}</p>)}
+				{arr.length && arr.map((item, id) => <p key={id}>{item}</p>)}
 			</div>
 		);
 	}
