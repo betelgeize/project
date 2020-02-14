@@ -48,15 +48,15 @@ class App extends React.Component {
 			<div className="App">
 				Canvas online
 				<div>
-					<Rect onChangeMode={this.onChangeMode} mode = 'fill'/>
-					<Rect onChangeMode={this.onChangeMode} mode = 'stroke'/>
-					<Rect onChangeMode={this.onChangeMode} mode = 'clear'/>
-					<Arc onChangeMode={this.onChangeMode} mode = 'arcfill'/>
-					<Arc onChangeMode={this.onChangeMode} mode = 'arcstroke'/>
-					<Line onChangeMode={this.onChangeMode} mode = 'line'/>
-					<Line onChangeMode={this.onChangeMode} mode = 'straightLine'/>
-					<Line onChangeMode={this.onChangeMode} mode = 'closeLine'/>
-					<Line onChangeMode={this.onChangeMode} mode = 'bezierCurve'/>
+					<Rect onChangeMode={this.onChangeMode} pressedBtn = {this.state.mode} mode = 'fill'/>
+					<Rect onChangeMode={this.onChangeMode} pressedBtn = {this.state.mode} mode = 'stroke'/>
+					<Rect onChangeMode={this.onChangeMode} pressedBtn = {this.state.mode} mode = 'clear'/>
+					<Arc onChangeMode={this.onChangeMode} pressedBtn = {this.state.mode} mode = 'arcfill'/>
+					<Arc onChangeMode={this.onChangeMode} pressedBtn = {this.state.mode} mode = 'arcstroke'/>
+					<Line onChangeMode={this.onChangeMode} pressedBtn = {this.state.mode} mode = 'line'/>
+					<Line onChangeMode={this.onChangeMode} pressedBtn = {this.state.mode} mode = 'straightLine'/>
+					<Line onChangeMode={this.onChangeMode} pressedBtn = {this.state.mode} mode = 'closeLine'/>
+					<Line onChangeMode={this.onChangeMode} pressedBtn = {this.state.mode} mode = 'bezierCurve'/>
 				</div>
 				<div>
 					Свойства

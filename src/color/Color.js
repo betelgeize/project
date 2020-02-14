@@ -8,7 +8,7 @@ class Color extends React.Component {
 	}
 
 	onChangeColor(e) {
-		let mode = this.props.mode,
+		let  mode = this.props.mode,
 			val = e.target.value,
 			drawFunc;
 

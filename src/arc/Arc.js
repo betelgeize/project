@@ -14,7 +14,7 @@ class Arc extends React.Component {
 	render() {
 		return (
 			<button onClick={this.onChangeMode}
-					className={"line"}>{this.props.mode}</button>
+					className={this.props.clicked === this.props.mode ? 'clickedBtn' : ''}>{this.props.mode}</button>
 			// <select onChange={this.onChangeMode}>
 			// 	<option value="arcfill">fill</option>
 			// 	<option value="arcstroke">stroke</option>
