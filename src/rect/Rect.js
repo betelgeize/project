@@ -14,7 +14,6 @@ class Rect extends React.Component {
 	}
 
 	render() {
-		debugger;
 		return (
 			<button onClick={this.onChangeMode}
 					className={this.props.clicked === this.props.mode ? 'clickedBtn' : ''} >{this.props.mode}</button>

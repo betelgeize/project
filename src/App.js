@@ -7,6 +7,7 @@ import Arc from "./arc/Arc";
 import Line from "./line/Line";
 import Color from "./color/Color";
 import Canvas from './canvas/Canvas'
+import CurrentShape from './currentShape/CurrentShape'
 import History from "./history/History"
 
 class App extends React.Component {
@@ -16,12 +17,14 @@ class App extends React.Component {
 			ctx: {},
 			mode: '',
 			historyFunc: [],
+			currentCoords: [],
 			defaultCtx: {}
 		};
 		this.state = this.initialState;
 		this.getDefaultCtx = this.getDefaultCtx.bind(this);
 		this.getAction = this.getAction.bind(this);
 		this.onChangeMode = this.onChangeMode.bind(this);
+		this.onChangeFromCurrentShape = this.onChangeFromCurrentShape.bind(this);
 	}
 
 	getDefaultCtx(defaultCtx) {
@@ -30,9 +33,24 @@ class App extends React.Component {
 		}))
 	}
 
-	getAction(func) {
+	getAction(obj) {
 		this.setState((prevState) => ({
-			historyFunc: prevState.historyFunc.concat(func)
+			historyFunc: prevState.historyFunc.concat([obj]),//.func(obj.coords)),
+			currentCoords: obj.coords
+		}))
+	}
+
+	onChangeFromCurrentShape(currentCoords) {
+		this.setState((prevState) => ({
+			historyFunc: prevState.historyFunc.map((item, i, arr) => {
+					if (i === arr.length - 1) {
+						return {
+							func : item.func,
+							coords : currentCoords
+						};
+					}
+				})//,
+			// currentCoords
 		}))
 	}
 
@@ -74,6 +92,10 @@ class App extends React.Component {
 					mode={this.state.mode}
 					historyFunc={this.state.historyFunc}
 				/>
+				<div>
+					<CurrentShape currentCoords={this.state.currentCoords}
+								  onChangeFromCurrentShape = {this.onChangeFromCurrentShape} />
+				</div>
 				{/*<History ctx={this.state.ctx}/>*/}
 
 				{/*<header className="App-header">

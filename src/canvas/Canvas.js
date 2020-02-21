@@ -38,9 +38,12 @@ class Canvas extends React.Component {
 			ctx[key] = defaultCtx[key];
 		}
 		ctx.clearRect(0,0, canvas.width, canvas.height);
-		this.props.historyFunc.map(itemFunc => {
+		this.props.historyFunc.forEach(item => {
+				item.func(item.coords)(ctx);
+			}
+			/*itemFunc => {
 			itemFunc(ctx);
-		});
+		}*/);
 	}
 
 	onClick(e) {
@@ -94,9 +97,16 @@ class Canvas extends React.Component {
 
 		this.mouseDown = false;
 		if (mode === 'fill' || !mode) {
-			drawFunc = ctx => {
-				ctx.fillRect(...rectCoords());
-			};
+			this.props.getAction({
+				func : (coords) => (ctx) => {
+					ctx.fillRect(...coords);
+				},
+				coords : rectCoords()
+			});
+			return;
+			// drawFunc = ctx => {
+			// 	ctx.fillRect(...rectCoords());
+			// };
 		} else if (mode === 'stroke') {
 			drawFunc = ctx => {
 				ctx.strokeRect(...rectCoords());
@@ -136,8 +146,8 @@ class Canvas extends React.Component {
 		const canvas = this.canvasOne.current;
 		const currentRect = canvas.getBoundingClientRect();
 		return {
-			x : e.clientX - currentRect.left,
-			y : e.clientY - currentRect.top
+			x : Math.round(e.clientX - currentRect.left),
+			y : Math.round(e.clientY - currentRect.top)
 		}
 	}
 
