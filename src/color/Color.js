@@ -8,24 +8,30 @@ class Color extends React.Component {
 	}
 
 	onChangeColor(e) {
-		let  mode = this.props.mode,
+		let mode = this.props.mode,
 			val = e.target.value,
-			drawFunc;
+			drawObj;
 
 		if (mode === 'fillStyle') {
-			drawFunc = ctx => {
-				ctx.fillStyle = val;
+			drawObj = {
+				func : () => ctx => {
+					ctx.fillStyle = val;
+				}
 			};
 		} else if (mode === 'strokeStyle') {
-			drawFunc = ctx => {
-				ctx.strokeStyle = val;
+			drawObj = {
+				func : () => ctx => {
+					ctx.strokeStyle = val;
+				}
 			};
 		} else if (mode === 'shadowColor') {
-			drawFunc = ctx => {
-				ctx.shadowColor = val;
+			drawObj = {
+				func : () => ctx => {
+					ctx.shadowColor = val;
+				}
 			};
 		}
-		this.props.getAction(drawFunc)
+		this.props.getAction(drawObj)
 	}
 
 	render() {

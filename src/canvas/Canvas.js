@@ -38,7 +38,7 @@ class Canvas extends React.Component {
 			ctx[key] = defaultCtx[key];
 		}
 		ctx.clearRect(0,0, canvas.width, canvas.height);
-		this.props.historyFunc.forEach(item => {
+		this.props.historyFunc.forEach((item, ...arr) => {
 				item.func(item.coords)(ctx);
 			}
 			/*itemFunc => {
@@ -93,53 +93,68 @@ class Canvas extends React.Component {
 			let radius = Math.sqrt(Math.pow(finishPointY - startPointY, 2) + Math.pow(finishPointX - startPointX, 2));
 			return [startPointX, startPointY, radius, 0, 2 * Math.PI, false]
 		};
-		let drawFunc;
+		let drawObj;
 
 		this.mouseDown = false;
-		if (mode === 'fill' || !mode) {
-			this.props.getAction({
+		if (mode === 'fill') {
+			drawObj = {
 				func : (coords) => (ctx) => {
 					ctx.fillRect(...coords);
 				},
 				coords : rectCoords()
-			});
-			return;
+			};
 			// drawFunc = ctx => {
 			// 	ctx.fillRect(...rectCoords());
 			// };
 		} else if (mode === 'stroke') {
-			drawFunc = ctx => {
-				ctx.strokeRect(...rectCoords());
+			drawObj = {
+				func : (coords) => (ctx) => {
+					ctx.strokeRect(...coords);
+				},
+				coords : rectCoords()
 			};
 		} else if (mode === 'clear') {
-			drawFunc = ctx => {
-				ctx.clearRect(...rectCoords());
+			drawObj = {
+				func : (coords) => (ctx) => {
+					ctx.clearRect(...coords);
+				},
+				coords : rectCoords()
 			};
 		} else if (mode === 'arcfill') {
-			drawFunc = ctx => {
-				ctx.beginPath();
-				ctx.arc(...arcCoords());
-				ctx.fill();
+			drawObj = {
+				func : (coords) => (ctx) => {
+					ctx.beginPath();
+					ctx.arc(...coords);
+					ctx.fill();
+				},
+				coords : arcCoords()
 			};
 		} else if (mode === 'arcstroke') {
-			drawFunc = ctx => {
-				ctx.beginPath();
-				ctx.arc(...arcCoords());
-				ctx.stroke();
+			drawObj = {
+				func : (coords) => (ctx) => {
+					ctx.beginPath();
+					ctx.arc(...coords);
+					ctx.stroke();
+				},
+				coords : arcCoords()
 			};
 		} else if (mode === 'line' || mode === 'straightLine') {
-			drawFunc = ctx => {
-				ctx.lineTo(finishPointX, finishPointY);
-				ctx.stroke();
+			drawObj = {
+				func : (coords) => (ctx) => {
+					ctx.lineTo(finishPointX, finishPointY);
+					ctx.stroke();
+				}
 			};
 		} else if (mode === 'closeLine') {
-			drawFunc = ctx => {
-				ctx.lineTo(finishPointX, finishPointY);
-				ctx.closePath();
-				ctx.stroke();
+			drawObj = {
+				func : (coords) => (ctx) => {
+					ctx.lineTo(finishPointX, finishPointY);
+					ctx.closePath();
+					ctx.stroke();
+				}
 			};
 		}
-		this.props.getAction(drawFunc);
+		this.props.getAction(drawObj);
 	}
 
 	getCurrentCoords(e) {

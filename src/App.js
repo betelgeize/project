@@ -15,7 +15,7 @@ class App extends React.Component {
 		super();
 		this.initialState = {
 			ctx: {},
-			mode: '',
+			mode: 'fill',
 			historyFunc: [],
 			currentCoords: [],
 			defaultCtx: {}
@@ -35,22 +35,20 @@ class App extends React.Component {
 
 	getAction(obj) {
 		this.setState((prevState) => ({
-			historyFunc: prevState.historyFunc.concat([obj]),//.func(obj.coords)),
+			historyFunc: prevState.historyFunc.concat([obj]),
 			currentCoords: obj.coords
 		}))
 	}
 
-	onChangeFromCurrentShape(currentCoords) {
+	onChangeFromCurrentShape(coords) {
 		this.setState((prevState) => ({
 			historyFunc: prevState.historyFunc.map((item, i, arr) => {
-					if (i === arr.length - 1) {
-						return {
-							func : item.func,
-							coords : currentCoords
-						};
-					}
-				})//,
-			// currentCoords
+				return (i === arr.length - 1) ? {
+					func : item.func,
+					coords
+				} : item;
+			}),
+			currentCoords : coords
 		}))
 	}
 
@@ -93,8 +91,10 @@ class App extends React.Component {
 					historyFunc={this.state.historyFunc}
 				/>
 				<div>
-					<CurrentShape currentCoords={this.state.currentCoords}
-								  onChangeFromCurrentShape = {this.onChangeFromCurrentShape} />
+					{this.state.currentCoords && this.state.currentCoords.length ? <CurrentShape
+						mode={this.state.mode}
+						currentCoords={this.state.currentCoords}
+						onChangeFromCurrentShape = {this.onChangeFromCurrentShape} /> : ''}
 				</div>
 				{/*<History ctx={this.state.ctx}/>*/}
 
