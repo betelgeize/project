@@ -32,18 +32,14 @@ class Canvas extends React.Component {
 		const canvas = this.canvasOne.current;
 		const ctx = canvas.getContext('2d');
 
-		// console.log(this.props.defaultCtx);
 		const defaultCtx = this.props.defaultCtx;
 		for (let key in defaultCtx) {
 			ctx[key] = defaultCtx[key];
 		}
 		ctx.clearRect(0,0, canvas.width, canvas.height);
 		this.props.historyFunc.forEach((item, ...arr) => {
-				item.func(item.coords)(ctx);
-			}
-			/*itemFunc => {
-			itemFunc(ctx);
-		}*/);
+			item.func(item.coords)(ctx);
+		});
 	}
 
 	onClick(e) {
@@ -90,7 +86,7 @@ class Canvas extends React.Component {
 			return [startPointX, startPointY, finishPointX - startPointX, finishPointY - startPointY];
 		};
 		let arcCoords = () => {
-			let radius = Math.sqrt(Math.pow(finishPointY - startPointY, 2) + Math.pow(finishPointX - startPointX, 2));
+			let radius = Math.round(Math.sqrt(Math.pow(finishPointY - startPointY, 2) + Math.pow(finishPointX - startPointX, 2)));
 			return [startPointX, startPointY, radius, 0, 2 * Math.PI, false]
 		};
 		let drawObj;
@@ -101,6 +97,7 @@ class Canvas extends React.Component {
 				func : (coords) => (ctx) => {
 					ctx.fillRect(...coords);
 				},
+				funcStr : `ctx.fillRect(${rectCoords()})`,
 				coords : rectCoords()
 			};
 			// drawFunc = ctx => {
@@ -111,6 +108,7 @@ class Canvas extends React.Component {
 				func : (coords) => (ctx) => {
 					ctx.strokeRect(...coords);
 				},
+				funcStr : `ctx.strokeRect(${rectCoords()})`,
 				coords : rectCoords()
 			};
 		} else if (mode === 'clear') {
@@ -118,6 +116,7 @@ class Canvas extends React.Component {
 				func : (coords) => (ctx) => {
 					ctx.clearRect(...coords);
 				},
+				funcStr : `ctx.clearRect(${rectCoords()})`,
 				coords : rectCoords()
 			};
 		} else if (mode === 'arcfill') {
@@ -127,6 +126,9 @@ class Canvas extends React.Component {
 					ctx.arc(...coords);
 					ctx.fill();
 				},
+				funcStr : `ctx.beginPath();
+				ctx.arc(${arcCoords()});
+				ctx.fill();`,
 				coords : arcCoords()
 			};
 		} else if (mode === 'arcstroke') {
@@ -136,6 +138,9 @@ class Canvas extends React.Component {
 					ctx.arc(...coords);
 					ctx.stroke();
 				},
+				funcStr : `ctx.beginPath();
+				ctx.arc(${arcCoords()});
+				ctx.stroke();`,
 				coords : arcCoords()
 			};
 		} else if (mode === 'line' || mode === 'straightLine') {
