@@ -1,13 +1,29 @@
 import React from 'react';
+import {getRads, getDegs} from '../util/Util'
 
 class CurrentShape extends React.Component {
 	constructor(props) {
 		super(props);
 		this.onChangeMode = this.onChangeMode.bind(this);
+		this.onChangeInput = this.onChangeInput.bind(this);
 	}
 
+	onChangeInput(e) {}
+
 	onChangeMode(e) {
-		this.props.onChangeFromCurrentShape([...e.currentTarget.elements].map(item => Number(item.value)));
+		this.props.onChangeFromCurrentShape([...e.currentTarget.elements].map(item => {
+			if (item.name === 'eAng' || item.name === 'sAng') {
+				return getRads(Number(item.value))
+			} else {
+				return Number(item.value)
+			}
+		}));
+	}
+
+	renderInput(str, val, defaultValue) {
+		return (
+			<label>{str}<input type='number' name={str} value={val || defaultValue} onChange={this.onChangeInput}/></label>
+		)
 	}
 
 	render() {
@@ -17,22 +33,23 @@ class CurrentShape extends React.Component {
 
 			return (
 				<form onChange={this.onChangeMode}>
-					<label>x<input type='number' value={x || ''} /></label>
-					<label>y<input type='number' value={y || ''} /></label>
-					<label>width<input type='number' value={width || ''} /></label>
-					<label>height<input type='number' value={height || ''} /></label>
+					{this.renderInput('x', x)}
+					{this.renderInput('y', y)}
+					{this.renderInput('width', width)}
+					{this.renderInput('height', height)}
 				</form>
 			);
 		} else if (mode === 'arcfill' || mode === 'arcstroke' ) {
 			let [x, y, r, sAng, eAng, counterclockwise] = this.props.currentCoords;
-
+			sAng = Math.round(getDegs(sAng)) || '0';
+			eAng = Math.round(getDegs(eAng));
 			return (
 				<form onChange={this.onChangeMode}>
-					<label>x<input type='number' value={x || ''} /></label>
-					<label>y<input type='number' value={y || ''} /></label>
-					<label>r<input type='number' value={r || ''} /></label>
-					<label>sAng<input type='number' value={sAng || 0} /></label>
-					<label>eAng<input type='number' value={eAng || ''} /></label>
+					{this.renderInput('x', x)}
+					{this.renderInput('y', y)}
+					{this.renderInput('r', r)}
+					{this.renderInput('sAng', sAng)}
+					{this.renderInput('eAng', eAng)}
 					<label>counterclockwise<input type='checkbox' value={counterclockwise || ''} /></label>
 				</form>
 			);
