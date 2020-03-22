@@ -7,17 +7,9 @@ class History extends React.Component {
 	}
 
 	render() {
-		const props = this.props.ctx;
-		let arr = [];
-
-		for (let key in props) {
-			if (typeof props[key] !== 'function') {
-				arr.push(key + ': ' + props[key]);
-			}
-		}
 		return (
 			<div className="history">
-				{arr.length && arr.map((item, id) => <p key={id}>{item}</p>)}
+				{this.props.historyFunc.map((item, id) => <p key={id}>{id}: {item.funcStr}</p>).reverse()}
 			</div>
 		);
 	}
