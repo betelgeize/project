@@ -1,5 +1,4 @@
 import React from 'react';
-import './Rect.css';
 
 class Rect extends React.Component {
 	constructor(props) {

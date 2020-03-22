@@ -1,5 +1,4 @@
 import React from 'react';
-import './Arc.css';
 
 class Arc extends React.Component {
 	constructor(props) {

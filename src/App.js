@@ -96,22 +96,7 @@ class App extends React.Component {
 						currentCoords={this.state.currentCoords}
 						onChangeFromCurrentShape = {this.onChangeFromCurrentShape} /> : ''}
 				</div>
-				{/*<History ctx={this.state.ctx}/>*/}
-
-				{/*<header className="App-header">
-				<img src={logo} className="App-logo" alt="logo"/>
-				<p>
-					Edit <code>src/App.js</code> and save to reload.
-				</p>
-				<a
-					className="App-link"
-					href="https://reactjs.org"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Learn React
-				</a>
-			</header>*/}
+				{this.state.historyFunc.length ? <History historyFunc={this.state.historyFunc} /> : ''}
 			</div>
 		);
 	}
